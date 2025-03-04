@@ -5,6 +5,8 @@ import { AppDataSource } from "@database/data-source";
 import addressRouter from '@routes/address.router'
 import categoryRouter from '@routes/categories.router'
 import brandRouter from '@routes/brands.router'
+import userRouter from '@routes/users.router'
+import uploadRoutes from "@routes/upload.routes";
 import bodyParser from "body-parser";
 
 dotenv.config();
@@ -29,7 +31,8 @@ AppDataSource.initialize().then(() => {
   process.exit(1)  // exit with error code 1 to indicate failure to connect to the database
 });
 
-app.use("/", addressRouter, categoryRouter, brandRouter)
+app.use("/", addressRouter, categoryRouter, brandRouter, userRouter)
+app.use("/image", uploadRoutes)
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

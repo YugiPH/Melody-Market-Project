@@ -33,5 +33,68 @@ class UserService{
     
         return await userRepository.save(u1);
     }
+
+    static async editUser(user_id: number, data: any, method: string): Promise<User> {
+        const { username, email, phone, image, addressAddressId } = data;
+        const user = await userRepository.findOne({ where: { user_id } });
+    
+        if (!user) {
+            throw new Error("User not found");
+        }
+    
+        if (method === "PUT") {
+            if (!username || !email) {
+                throw new Error("Missing required fields for PUT");
+            }
+            user.username = username || user.username;
+            user.email = email || user.email;
+            user.phone = phone || user.phone;
+            user.image = image || user.image;
+    
+            if (addressAddressId) {
+                const address = await addressRepository.findOne({ where: { address_id: addressAddressId } });
+                if (!address) {
+                    throw new Error("Address not found");
+                }
+                user.address = address;
+            }
+    
+            return await userRepository.save(user);
+        } else if (method === "PATCH" || method === "POST") {
+            user.username = username ?? user.username;
+            user.email = email ?? user.email;
+            user.phone = phone ?? user.phone;
+            user.image = image ?? user.image;
+    
+            if (addressAddressId) {
+                const address = await addressRepository.findOne({ where: { address_id: addressAddressId } });
+                if (address) {
+                    user.address = address;
+                }
+            }
+    
+            return await userRepository.save(user);
+        }
+    
+        return user;
+    }
+    
+    static async getUserById(user_id: number) {
+        const user = await userRepository.findOne({ where: { user_id } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return user;
+    }
+
+    static async deleteUser(user_id: number): Promise<void> {
+        const user = await userRepository.findOne({ where: { user_id } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        await userRepository.remove(user);
+    }
     
 }
+
+export default UserService;
